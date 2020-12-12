@@ -13,9 +13,16 @@
 ;; - (make-ufo Nat Nat Int Int)
 ;; 
 ;; Interpretation:
-;; "resting" when the the current world is resting and another world is active
-;; "stopped" when the world has been stopped using the "q" button
-;; "ufo represents the location (pixels) and velocity (pixels/tick) of the ufo
+;;
+;; "resting" when the the current world is
+;;     resting and another world is active
+;; "stopped" when the world has been stopped
+;;     using the "q" button
+;; "ufo represents the location (pixels) and
+;;     velocity (pixels/tick) of the ufo
+
+(define (resting? a)
+  (and (string? a) (string=? a "resting")))
 
 
 (define SIZE 400)
@@ -32,48 +39,80 @@
 ;; place the ufo into MT at its current position
 ;; otherwise display "resting" or "stopped" status
 
-(check-expect (render "resting") (overlay (text "resting" 100 "red") MT))
-(check-expect (render "stopped") (overlay (text "stopped" 100 "red") MT))
-(check-expect (render (make-ufo 10 20 -1 +1)) (place-image UFO 10 20 MT))
+(check-expect 
+ (render "resting")
+ (overlay (text "resting" 100 "red") MT))
+
+(check-expect 
+ (render "stopped") 
+ (overlay (text "stopped" 100 "red") MT))
+
+(check-expect 
+ (render (make-ufo 10 20 -1 +1)) 
+ (place-image UFO 10 20 MT))
 
 (define (render w)
-  (cond [(and (string? w) (string=? w "resting")) (overlay REST MT)]
-        [(and (string? w) (string=? w "stopped")) (overlay STOPPED MT)]
-        [(ufo? w) (place-image UFO (ufo-x w) (ufo-y w) MT)]))
+  (cond
+    [(resting? w)
+     (overlay REST MT)]
+    [(stopped? w)
+     (overlay STOPPED MT)]
+    [(ufo? w)
+     (place-image UFO (ufo-x w) (ufo-y w) MT)]))
 
 
 ;; WorldSt KeyEvt -> WorldSt
 ;; control the ufo’s direction via the arrow keys
 
-(check-expect (control "resting" "down") "resting")
-(check-expect (control "resting" "q") "stopped")
-(check-expect (control "stopped" "up") "stopped")
-(check-expect (control (make-ufo 5 8 -1 -1) "down") (make-ufo 5 8 -1 +1))
-(check-expect (control (make-ufo 5 8 -1 -1) "up") (make-ufo 5 8 -1 -1))
-(check-expect (control (make-ufo 5 8 -1 -1) "left") (make-ufo 5 8 -1 -1))
-(check-expect (control (make-ufo 5 8 -1 -1) "right") (make-ufo 5 8 +1 -1))
-(check-expect (control (make-ufo 5 8 -1 -1) "q") "stopped")
-(check-expect (control (make-ufo 5 8 -1 -1) "z") (make-ufo 5 8 -1 -1))
+(check-expect 
+ (control "resting" "down")
+ "resting")
+
+(check-expect 
+ (control "resting" "q") 
+ "stopped")
+
+(check-expect 
+ (control "stopped" "up") 
+ "stopped")
+
+(check-expect 
+ (control (make-ufo 5 8 -1 -1) "down") 
+ (make-ufo 5 8 -1 +1))
+
+(check-expect 
+ (control (make-ufo 5 8 -1 -1) "up") 
+ (make-ufo 5 8 -1 -1))
+
+(check-expect 
+ (control (make-ufo 5 8 -1 -1) "left") 
+ (make-ufo 5 8 -1 -1))
+
+(check-expect 
+ (control (make-ufo 5 8 -1 -1) "right") 
+ (make-ufo 5 8 +1 -1))
+
+(check-expect 
+ (control (make-ufo 5 8 -1 -1) "q") 
+ "stopped")
+
+(check-expect 
+ (control (make-ufo 5 8 -1 -1) "z") 
+ (make-ufo 5 8 -1 -1))
 
 (define (control w ke)
   (cond
-    [(and (string? w) (string=? w "resting")) (control-resting w ke)]
-    [(and (string? w) (string=? w "stopped")) w]
-    [(ufo? w) (control-ufo w ke)]))
-
-(define (control-resting w ke)
-  (cond
-    [(key=? ke "q") "stopped"]
-    [else w]))
-
-(define (control-ufo w ke)
-  (cond
-    [(key=? ke "up") (set-ufo-dy w -1)]
-    [(key=? ke "down") (set-ufo-dy w +1)]
-    [(key=? ke "left") (set-ufo-dx w -1)]
-    [(key=? ke "right") (set-ufo-dx w +1)]
-    [(key=? ke "q") "stopped"]
-    [else w]))
+    [(resting? w)
+     (if (key=? ke "q") "stopped" w)]
+    [(stopped? w) w]
+    [(ufo? w)
+     (cond
+       [(key=? ke "up") (set-ufo-dy w -1)]
+       [(key=? ke "down") (set-ufo-dy w +1)]
+       [(key=? ke "left") (set-ufo-dx w -1)]
+       [(key=? ke "right") (set-ufo-dx w +1)]
+       [(key=? ke "q") "stopped"]
+       [else w])]))
 
 ;; WorldSt Int -> WorldSt
 (define (set-ufo-dy u dy)
@@ -86,21 +125,32 @@
 ;; WorldSt Nat Nat MouseEvt -> WorldSt
 ;; move the ufo to a new position on the canvas
 
-(check-expect (hyper (make-ufo 10 20 -1 +1) 40 30 "button-up") (make-ufo 10 20 -1 +1))
-(check-expect (hyper (make-ufo 10 20 -1 +1) 300 20 "button-down") (make-ufo 300 20 -1 +1))
-(check-expect (hyper "stopped" 300 20 "button-down") "stopped")
-(check-expect (hyper "resting" 300 20 "button-down") "resting")
+(check-expect
+ (hyper (make-ufo 10 20 -1 +1) 40 30 "button-up")
+ (make-ufo 10 20 -1 +1))
+
+(check-expect
+ (hyper (make-ufo 10 20 -1 +1) 300 20 "button-down")
+ (make-ufo 300 20 -1 +1))
+
+(check-expect
+ (hyper "stopped" 300 20 "button-down")
+ "stopped")
+
+(check-expect
+ (hyper "resting" 300 20 "button-down")
+ "resting")
+
 (check-expect "resting" "resting")
 
 (define (hyper w x y a)
-  (cond [(and (string? w) (string=? w "resting")) w]
-        [(and (string? w) (string=? w "stopped")) w]
-        [(ufo? w) (hyper-ufo w x y a)]))
-
-(define (hyper-ufo w x y a)
   (cond
-    [(mouse=? "button-down" a) (make-ufo x y (ufo-dx w) (ufo-dy w))]
-    [else w]))
+    [(resting? w) w]
+    [(stopped? w) w]
+    [(ufo? w)
+     (if (mouse=? "button-down" a)
+         (make-ufo x y (ufo-dx w) (ufo-dy w))
+         w)]))
 
 
 ;; WorldSt -> Boolean
@@ -190,9 +240,9 @@
   (cond
     [(and (string? w) (string=? "resting")) w]
     [(and (string? w) (string=? "stopped")) w]
-    [(ufo? w) (move-ufo-global w)]))
+    [(ufo? w) (move.global w)]))
 
-(define (move-ufo-global w)
+(define (move.global w)
   (local ((define v (move-ufo w)))
     (if (not (landed? v))
         v
@@ -230,25 +280,42 @@
   (make-ufo (/ SIZE 2) (/ SIZE 2) -1 +1))
 
 
-;; String -> WorldSt
-(define (main-for-client n)
-  (big-bang "resting"
-    (on-draw render)
-    (on-tick move)
-    (on-key control)
-    (on-mouse hyper)
-    (stop-when stopped? render)
-    (name n)
-    (on-receive receive)
-    (register LOCALHOST)))
+;; String WorldSt -> WorldSt
+;; starts a big-bang with an initial world state
+(define (main-for-client n worldst-init)
+  (big-bang worldst-init
+    [on-draw render]
+    [on-tick move]
+    [on-key control]
+    [on-mouse hyper]
+    [stop-when stopped? render]
+    [name n]
+    [on-receive receive]
+    [register LOCALHOST]))
+
+;; UniSt -> UniSt
+;; starts the universe with an initial universe state
+(define (main-for-server unist-init)
+  (universe unist-init
+            (on-new add-world)
+            (on-msg switch)
+            (on-disconnect del-world)))
 
 
-(launch-many-worlds/proc
- (λ () (universe '()
-                 (on-new add-world)
-                 (on-msg switch)
-                 (on-disconnect del-world)))
- (λ () (main-for-client "earth"))
- (λ () (main-for-client "mars"))
- (λ () (main-for-client "venus")))
+;; [List-of String] -> UniSt WorldSt ...
+;; Launches an initial universe server followed by
+;; one client per client-name in parallel
+(define (main client-names)
+  (apply launch-many-worlds/proc
+         (cons (λ () (main-for-server '()))
+               (map (λ (name)
+                      (λ () (main-for-client name "resting")))
+                    client-names))))
 
+
+;; Use arrow keys to control the UFO, use the mouse click
+;; to teleport the UFO, and "q" to quit. When the UFO lands
+;; The control transfers to the other UFOs
+
+
+#;(main '("earth" "mars" "venus"))
