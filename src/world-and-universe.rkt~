@@ -1,8 +1,0 @@
-#lang htdp/isl+
-
-(require 2htdp/image)
-(require 2htdp/universe)
- 
-; The code is divided into two sections in the paper
-; -- 4. Designing a World
-; -- 5. Universe: A World is Not Enough
