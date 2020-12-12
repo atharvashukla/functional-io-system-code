@@ -4,14 +4,10 @@ The implementation of UFO World and Universe from  **A Functional I/O System, or
 
 Link to the paper: https://www2.ccs.neu.edu/racket/pubs/icfp09-fffk.pdf
 
-Why does this repository exist? 
+The code in the paper is...
 
-- Integrated the disparate code snippets from Section 4 and Section 5 into a working demo, fixed typos. The code snippet that shows the design in an object-oriented style is not included.
-- Added a "stopping" state so that a world may be stopped by pressing `q`, I have also integrated the "resting" world state into all the handler functions.
-- Added tests where the paper says ";; ... more test cases ..."
-- I have defined a main function using launch-many-worlds/proc that accepts a list of world names then does the following in order:
-    1. Starts the server.
-    2. Starts all clients (each correspinding to a provided names) in parallel.
-- ufo-universe.rkt is written in #lang htdp/asl (Advanced Student Language) as a Racket script (using #! /usr/bin/env racket). To run it, do either of the following:
-  1. Open DrRacket and _Run_, or
-  2. `$ ./ufo-universe.rkt` if you have racket in PATH. 
+- Integrated into a working demo. The code snippet that shows the design in an object-oriented style is not included.
+- Updated with "stopping" state so that a world may be stopped by pressing `q`, and "resting". All the handlers are updated to accomodate the new world state.
+- Updated with tests where the paper says ";; ... more test cases ..."
+- The main function is defined using launch-many-worlds/proc that accepts a list of world names and then, first, starts the server, followed by all the clients in parallel.
+- Written in #lang htdp/asl (Advanced Student Language) as a Racket script (using #! /usr/bin/env racket)
