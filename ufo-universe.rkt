@@ -297,9 +297,9 @@
 ;; starts the universe with an initial universe state
 (define (main-for-server unist-init)
   (universe unist-init
-            (on-new add-world)
-            (on-msg switch)
-            (on-disconnect del-world)))
+            [on-new add-world]
+            [on-msg switch]
+            [on-disconnect del-world]))
 
 
 ;; [List-of String] -> UniSt WorldSt ...
