@@ -4,10 +4,10 @@ The implementation of UFO World and Universe from  **A Functional I/O System, or
 
 Link to the paper: https://www2.ccs.neu.edu/racket/pubs/icfp09-fffk.pdf
 
-The code in the paper is...
+My additions:
 
-- Integrated into a working demo. The code snippet that shows the design in an object-oriented style is not included.
-- Updated with "stopping" state so that a world may be stopped by pressing `q`, and "resting". All the handlers are updated to accomodate the new world state.
-- Updated with tests where the paper says ";; ... more test cases ..."
-- The main function is defined using launch-many-worlds/proc that accepts a list of world names and then, first, starts the server, followed by all the clients in parallel.
-- Written in #lang htdp/asl (Advanced Student Language) as a Racket script (using #! /usr/bin/env racket)
+- Integrated into a working demo, fixed typos and errors.
+- Updated all the handlers to accomodate the "resting" state (when the control transfers to other worlds) and a "stopping" state (so that a world may be stopped by pressing `q`)
+- Added tests where the paper says ";; ... more test cases ..."
+- Defined a main function using launch-many-worlds/proc that accepts a list of world names. First, it starts the server, then it spawns all the clients in parallel.
+- Wrote the whole thing in #lang htdp/asl (Advanced Student Language) as a Racket script (using #! /usr/bin/env racket)
